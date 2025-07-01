@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, DynamicRetrievalMode } from '@google/generative-ai';
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
@@ -36,7 +36,7 @@ export async function GET() {
       tools: [{
         googleSearchRetrieval: {
           dynamicRetrievalConfig: {
-            mode: "MODE_DYNAMIC",
+            mode: DynamicRetrievalMode.MODE_DYNAMIC,
             dynamicThreshold: 0.7,
           },
         },
@@ -97,7 +97,7 @@ export async function POST() {
         tools: [{
           googleSearchRetrieval: {
             dynamicRetrievalConfig: {
-              mode: "MODE_DYNAMIC",
+              mode: DynamicRetrievalMode.MODE_DYNAMIC,
               dynamicThreshold: 0.7,
             },
           },
