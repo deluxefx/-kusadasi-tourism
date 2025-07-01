@@ -1,8 +1,10 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_AI_API_KEY!
+});
 
 async function cleanupOldContent() {
   try {
@@ -31,14 +33,26 @@ async function cleanupOldContent() {
 
 export async function GET() {
   try {
-    // TODO: Enable Google Search grounding when SDK supports it
-    // Current SDK version doesn't support googleSearch tool yet
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Write engaging, current daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Create realistic and specific details that feel current and relevant for today's date. Include practical information like weather conditions, restaurant recommendations, local events, and tourism tips. Write in a friendly, informative tone. At the end, add: 'Note: Content generated with AI - Search grounding coming soon!'";
+    // Define the grounding tool
+    const groundingTool = {
+      googleSearch: {},
+    };
+
+    // Configure generation settings
+    const config = {
+      tools: [groundingTool],
+    };
+
+    const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
     
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const content = response.text();
+    // Make the request with grounding
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config,
+    });
+
+    const content = response.text;
     
     // Cache the content with today's date as key
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -83,12 +97,26 @@ export async function POST() {
     
     // If still no content, generate fresh content
     if (!content) {
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-      const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Write engaging, current daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Create realistic and specific details that feel current and relevant for today's date. Include practical information like weather conditions, restaurant recommendations, local events, and tourism tips. Write in a friendly, informative tone. At the end, add: 'Note: Content generated with AI - Search grounding coming soon!'";
+      // Define the grounding tool
+      const groundingTool = {
+        googleSearch: {},
+      };
+
+      // Configure generation settings
+      const config = {
+        tools: [groundingTool],
+      };
+
+      const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
       
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      content = response.text();
+      // Make the request with grounding
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config,
+      });
+
+      content = response.text;
       
       // Cache the fresh content
       await kv.set(cacheKey, content, { ex: 25 * 60 * 60 });
