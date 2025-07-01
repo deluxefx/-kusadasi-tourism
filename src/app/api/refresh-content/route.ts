@@ -1,0 +1,81 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { kv } from '@vercel/kv';
+import { NextRequest, NextResponse } from 'next/server';
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+
+export async function GET() {
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    
+    const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today.";
+    
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const content = response.text();
+    
+    // Cache the content with today's date as key
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const cacheKey = `kusadasi-content-${today}`;
+    
+    await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
+    
+    return NextResponse.json({ 
+      success: true, 
+      content,
+      cached: true,
+      date: today 
+    });
+    
+  } catch (error) {
+    console.error('Error refreshing content:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to refresh content' },
+      { status: 500 }
+    );
+  }
+}
+
+// Also create a function to get cached content
+export async function POST() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const cacheKey = `kusadasi-content-${today}`;
+    
+    let content = await kv.get(cacheKey);
+    
+    // If no content for today, try yesterday as fallback
+    if (!content) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
+      content = await kv.get(yesterdayKey);
+    }
+    
+    // If still no content, generate fresh content
+    if (!content) {
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today.";
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      content = response.text();
+      
+      // Cache the fresh content
+      await kv.set(cacheKey, content, { ex: 25 * 60 * 60 });
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      content,
+      date: today 
+    });
+    
+  } catch (error) {
+    console.error('Error getting content:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to get content' },
+      { status: 500 }
+    );
+  }
+}
