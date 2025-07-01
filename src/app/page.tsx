@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { kv } from '@vercel/kv';
+import ReactMarkdown from 'react-markdown';
 
 // Force dynamic rendering to always show latest content
 export const dynamic = 'force-dynamic';
@@ -54,10 +55,21 @@ async function DailyContent() {
   const content = await getDailyContent();
   
   return (
-    <div className="prose prose-lg max-w-4xl mx-auto">
-      <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
+    <div className="prose prose-lg max-w-4xl mx-auto prose-headings:text-blue-900 dark:prose-headings:text-blue-100 prose-p:text-gray-800 dark:prose-p:text-gray-200 prose-strong:text-blue-800 dark:prose-strong:text-blue-200 prose-li:text-gray-800 dark:prose-li:text-gray-200">
+      <ReactMarkdown
+        components={{
+          h1: ({children}) => <h1 className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-4">{children}</h1>,
+          h2: ({children}) => <h2 className="text-2xl font-semibold text-blue-800 dark:text-blue-200 mb-3 mt-6">{children}</h2>,
+          h3: ({children}) => <h3 className="text-xl font-medium text-blue-700 dark:text-blue-300 mb-2 mt-4">{children}</h3>,
+          p: ({children}) => <p className="text-gray-800 dark:text-gray-200 mb-4 leading-relaxed">{children}</p>,
+          ul: ({children}) => <ul className="list-disc list-inside mb-4 text-gray-800 dark:text-gray-200">{children}</ul>,
+          li: ({children}) => <li className="mb-2">{children}</li>,
+          strong: ({children}) => <strong className="font-semibold text-blue-800 dark:text-blue-200">{children}</strong>,
+          em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+        }}
+      >
         {content}
-      </div>
+      </ReactMarkdown>
     </div>
   );
 }

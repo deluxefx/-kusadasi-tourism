@@ -47,7 +47,7 @@ export async function GET() {
         }],
       });
       
-      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
+      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. check todays data and  write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
       
       result = await model.generateContent(prompt);
     } catch (groundingError) {
@@ -55,7 +55,7 @@ export async function GET() {
       
       // Fallback to standard model without grounding
       model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date.";
+      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. At the end of the content, please put note: includes online content generation.";
       
       result = await model.generateContent(prompt);
     }

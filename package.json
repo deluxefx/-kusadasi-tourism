@@ -13,7 +13,9 @@
     "@vercel/kv": "^3.0.0",
     "next": "15.3.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
