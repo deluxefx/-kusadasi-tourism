@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
 export async function GET() {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     
     const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today.";
     
@@ -54,7 +54,7 @@ export async function POST() {
     
     // If still no content, generate fresh content
     if (!content) {
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today.";
       
       const result = await model.generateContent(prompt);
