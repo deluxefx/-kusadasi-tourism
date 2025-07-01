@@ -113,11 +113,17 @@ export default function Home() {
 
         <footer className="text-center mt-12 text-gray-600">
           <p className="text-sm">
-            Daily content refreshed every morning.
+           © 2025 - All Rights Reserved.
+
+
           </p>
           <p className="text-xs mt-2">
-            Fresh content every day
+           Kusadasi.biz: Your Complete Guide to Kusadasi, Turkey
           </p>
+            <p className="text-xs mt-2">
+      
+          </p>
+        
         </footer>
       </div>
     </div>
