@@ -31,21 +31,34 @@ async function cleanupOldContent() {
 
 export async function GET() {
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.5-flash',
-      tools: [{
-        googleSearchRetrieval: {
-          dynamicRetrievalConfig: {
-            mode: DynamicRetrievalMode.MODE_DYNAMIC,
-            dynamicThreshold: 0.7,
+    // Try with grounding search first
+    let model, prompt, result;
+    
+    try {
+      model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.5-flash',
+        tools: [{
+          googleSearchRetrieval: {
+            dynamicRetrievalConfig: {
+              mode: DynamicRetrievalMode.MODE_DYNAMIC,
+              dynamicThreshold: 0.7,
+            },
           },
-        },
-      }],
-    });
-    
-    const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
-    
-    const result = await model.generateContent(prompt);
+        }],
+      });
+      
+      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
+      
+      result = await model.generateContent(prompt);
+    } catch (groundingError) {
+      console.log('Grounding search failed, falling back to standard model:', groundingError);
+      
+      // Fallback to standard model without grounding
+      model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date.";
+      
+      result = await model.generateContent(prompt);
+    }
     const response = await result.response;
     const content = response.text();
     
@@ -68,7 +81,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error refreshing content:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to refresh content' },
+      { success: false, error: 'Failed to refresh content', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
