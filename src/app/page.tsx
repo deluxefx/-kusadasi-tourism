@@ -6,14 +6,34 @@ async function getDailyContent() {
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `kusadasi-content-${today}`;
     
+    console.log('Homepage looking for cache key:', cacheKey);
+    
     let content = await kv.get(cacheKey);
+    console.log('Content found for today:', content ? 'YES' : 'NO');
     
     // If no content for today, try yesterday as fallback
     if (!content) {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
+      console.log('Trying yesterday key:', yesterdayKey);
       content = await kv.get(yesterdayKey);
+      console.log('Content found for yesterday:', content ? 'YES' : 'NO');
+    }
+    
+    // Try a few different recent dates as fallback
+    if (!content) {
+      for (let i = 0; i < 7; i++) {
+        const testDate = new Date();
+        testDate.setDate(testDate.getDate() - i);
+        const testKey = `kusadasi-content-${testDate.toISOString().split('T')[0]}`;
+        console.log('Trying fallback key:', testKey);
+        content = await kv.get(testKey);
+        if (content) {
+          console.log('Found content with fallback key:', testKey);
+          break;
+        }
+      }
     }
     
     return (content as string) || 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
