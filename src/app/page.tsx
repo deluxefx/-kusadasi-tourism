@@ -1,24 +1,23 @@
 import { Suspense } from 'react';
 import { kv } from '@vercel/kv';
 
+// Force dynamic rendering to always show latest content
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getDailyContent() {
   try {
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `kusadasi-content-${today}`;
     
-    console.log('Homepage looking for cache key:', cacheKey);
-    
     let content = await kv.get(cacheKey);
-    console.log('Content found for today:', content ? 'YES' : 'NO');
     
     // If no content for today, try yesterday as fallback
     if (!content) {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
-      console.log('Trying yesterday key:', yesterdayKey);
       content = await kv.get(yesterdayKey);
-      console.log('Content found for yesterday:', content ? 'YES' : 'NO');
     }
     
     // Try a few different recent dates as fallback
@@ -27,10 +26,8 @@ async function getDailyContent() {
         const testDate = new Date();
         testDate.setDate(testDate.getDate() - i);
         const testKey = `kusadasi-content-${testDate.toISOString().split('T')[0]}`;
-        console.log('Trying fallback key:', testKey);
         content = await kv.get(testKey);
         if (content) {
-          console.log('Found content with fallback key:', testKey);
           break;
         }
       }
