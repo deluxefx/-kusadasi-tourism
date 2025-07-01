@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,12 +22,16 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <div className="text-2xl font-bold text-blue-600">
-              Kuşadası
-            </div>
-            <div className="ml-2 text-sm text-gray-600">
-              Tourism
-            </div>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="https://www.kusadasi.biz/logoLight.png"
+                alt="Kusadasi Tourism Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Desktop Menu */}
