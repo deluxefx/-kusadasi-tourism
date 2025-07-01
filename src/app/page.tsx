@@ -57,7 +57,7 @@ export default function Home() {
             Kuşadası Tourism
           </h1>
           <p className="text-xl text-blue-700 dark:text-blue-300 mb-2">
-            Your Daily Gateway to Turkey's Aegean Paradise
+            Your Daily Gateway to Turkey&apos;s Aegean Paradise
           </p>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             {currentDate}
@@ -67,7 +67,7 @@ export default function Home() {
         <main className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12">
             <h2 className="text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-8 text-center">
-              Today's Kuşadası Update
+              Today&apos;s Kuşadası Update
             </h2>
             
             <Suspense fallback={<LoadingContent />}>
