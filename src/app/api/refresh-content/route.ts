@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, DynamicRetrievalMode } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
@@ -37,14 +37,7 @@ export async function GET() {
     try {
       model = genAI.getGenerativeModel({ 
         model: 'gemini-2.5-flash',
-        tools: [{
-          googleSearchRetrieval: {
-            dynamicRetrievalConfig: {
-              mode: DynamicRetrievalMode.MODE_DYNAMIC,
-              dynamicThreshold: 0.7,
-            },
-          },
-        }],
+        tools: [{ googleSearchRetrieval: {} }],
       });
       
       prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. check todays data and  write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
@@ -107,14 +100,7 @@ export async function POST() {
     if (!content) {
       const model = genAI.getGenerativeModel({ 
         model: 'gemini-2.5-flash',
-        tools: [{
-          googleSearchRetrieval: {
-            dynamicRetrievalConfig: {
-              mode: DynamicRetrievalMode.MODE_DYNAMIC,
-              dynamicThreshold: 0.7,
-            },
-          },
-        }],
+        tools: [{ googleSearchRetrieval: {} }],
       });
       const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
       
