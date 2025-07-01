@@ -16,7 +16,7 @@ async function getDailyContent() {
       content = await kv.get(yesterdayKey);
     }
     
-    return content || 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
+    return (content as string) || 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
   } catch (error) {
     console.error('Error fetching daily content:', error);
     return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon.';
