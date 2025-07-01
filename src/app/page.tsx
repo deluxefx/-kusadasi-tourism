@@ -3,6 +3,7 @@ import { kv } from '@vercel/kv';
 import ReactMarkdown from 'react-markdown';
 import Navigation from '@/components/Navigation';
 
+
 // Force dynamic rendering to always show latest content
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
