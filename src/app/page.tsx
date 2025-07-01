@@ -1,18 +1,22 @@
 import { Suspense } from 'react';
+import { kv } from '@vercel/kv';
 
 async function getDailyContent() {
   try {
-    const response = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/refresh-content`, {
-      method: 'POST',
-      cache: 'no-store'
-    });
+    const today = new Date().toISOString().split('T')[0];
+    const cacheKey = `kusadasi-content-${today}`;
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch content');
+    let content = await kv.get(cacheKey);
+    
+    // If no content for today, try yesterday as fallback
+    if (!content) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
+      content = await kv.get(yesterdayKey);
     }
     
-    const data = await response.json();
-    return data.content || 'Welcome to Kusadasi! Check back tomorrow for fresh daily content.';
+    return content || 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
   } catch (error) {
     console.error('Error fetching daily content:', error);
     return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon.';
