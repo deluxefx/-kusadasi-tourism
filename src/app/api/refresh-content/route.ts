@@ -4,6 +4,31 @@ import { NextResponse } from 'next/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
+async function cleanupOldContent() {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    // Delete content older than 7 days
+    const keysToDelete = [];
+    for (let i = 8; i <= 30; i++) { // Check up to 30 days back
+      const oldDate = new Date();
+      oldDate.setDate(oldDate.getDate() - i);
+      const oldKey = `kusadasi-content-${oldDate.toISOString().split('T')[0]}`;
+      keysToDelete.push(oldKey);
+    }
+    
+    // Delete old keys in batch
+    for (const key of keysToDelete) {
+      await kv.del(key);
+    }
+    
+    console.log(`Cleaned up ${keysToDelete.length} old content keys`);
+  } catch (error) {
+    console.error('Error cleaning up old content:', error);
+  }
+}
+
 export async function GET() {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
@@ -19,6 +44,9 @@ export async function GET() {
     const cacheKey = `kusadasi-content-${today}`;
     
     await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
+    
+    // Clean up old content to prevent database bloat
+    await cleanupOldContent();
     
     return NextResponse.json({ 
       success: true, 
