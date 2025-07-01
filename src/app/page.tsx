@@ -88,10 +88,10 @@ export default function Home() {
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-zinc-900 mb-4">
+          <h1 className="text-5xl md:text-6xl leading-tighter tracking-tighter mb-4 font-heading text-slate-600 ">
          Welcome to Kusadasi 
           </h1>
-          <p className="text-xl text-blue-600 mb-2">
+          <p className="text-xl text-slate-500 mb-2">
             Your Daily Gateway to Turkey&apos;s Aegean Paradise
           </p>
           <p className="text-lg text-gray-600">

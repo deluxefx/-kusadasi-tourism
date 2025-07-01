@@ -9,26 +9,25 @@ export default function Navigation() {
 
   const menuItems = [
     { name: 'Home', href: '/', current: true },
-    { name: 'Attractions', href: '#attractions', current: false },
-    { name: 'Hotels', href: '#hotels', current: false },
-    { name: 'Restaurants', href: '#restaurants', current: false },
-    { name: 'Weather', href: '#weather', current: false },
-    { name: 'Contact', href: '#contact', current: false },
+    { name: 'Kusadasi', href: 'https://www.kusadasi.biz/info/', current: false },
+    { name: 'Ephesus', href: 'https://www.kusadasi.biz/ephesus/', current: false },
+    { name: 'Around', href: 'https://www.kusadasi.biz/misc/', current: false },
+    { name: 'Contact', href: 'https://www.kusadasi.biz/misc/contact/', current: false }
   ];
 
   return (
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-zinc-50 pt-2">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center">
               <Image
                 src="https://www.kusadasi.biz/logoLight.png"
-                alt="Kusadasi Tourism Logo"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
+                alt="Kusadasi Logo"
+                width={240}
+                height={80}
+                className="h-20 w-auto"
                 priority
               />
             </Link>
@@ -41,10 +40,10 @@ export default function Navigation() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  className={`text-md block rounded-lg px-2 py-2 text-cyan-700 transition-all hover:text-cyan-500   ${
                     item.current
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                      ? 'bg-zinc-100 text-blue-700'
+                      : 'text-gray-700  hover:text-blue-600'
                   }`}
                 >
                   {item.name}
