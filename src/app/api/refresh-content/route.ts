@@ -33,42 +33,72 @@ async function cleanupOldContent() {
 
 export async function GET() {
   try {
-    // Define the grounding tool
-    const groundingTool = {
-      googleSearch: {},
-    };
-
-    // Configure generation settings
-    const config = {
-      tools: [groundingTool],
-    };
-
-    const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
-    
-    // Make the request with grounding
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config,
-    });
-
-    const content = response.text;
-    
-    // Cache the content with today's date as key
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
     const cacheKey = `kusadasi-content-${today}`;
+    const generatedFlagKey = `kusadasi-generated-${today}`;
     
-    await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
+    // COST PROTECTION: Check if content was already generated today
+    const existingContent = await kv.get(cacheKey);
+    const generatedToday = await kv.get(generatedFlagKey);
     
-    // Clean up old content to prevent database bloat
-    await cleanupOldContent();
+    if (existingContent && generatedToday) {
+      return NextResponse.json({ 
+        success: true, 
+        content: existingContent,
+        cached: true,
+        message: "Content already generated today - cost protection active",
+        date: today 
+      });
+    }
     
-    return NextResponse.json({ 
-      success: true, 
-      content,
-      cached: true,
-      date: today 
-    });
+    // Only generate new content if not already done today
+    if (!generatedToday) {
+      // Define the grounding tool
+      const groundingTool = {
+        googleSearch: {},
+      };
+
+      // Configure generation settings
+      const config = {
+        tools: [groundingTool],
+      };
+
+      const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
+      
+      // Make the request with grounding (EXPENSIVE - only once per day)
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config,
+      });
+
+      const content = response.text;
+      
+      // Cache the content and set the generated flag
+      await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
+      await kv.set(generatedFlagKey, true, { ex: 25 * 60 * 60 }); // 25 hours TTL
+      
+      // Clean up old content to prevent database bloat
+      await cleanupOldContent();
+      
+      return NextResponse.json({ 
+        success: true, 
+        content,
+        cached: true,
+        message: "New content generated with Google AI",
+        date: today 
+      });
+    } else {
+      // Return existing content without generating new
+      const content = existingContent || "Content generation limit reached for today. Please try again tomorrow.";
+      return NextResponse.json({ 
+        success: true, 
+        content,
+        cached: true,
+        message: "Daily generation limit reached - returning cached content",
+        date: today 
+      });
+    }
     
   } catch (error) {
     console.error('Error refreshing content:', error);
@@ -84,6 +114,7 @@ export async function POST() {
   try {
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `kusadasi-content-${today}`;
+    const generatedFlagKey = `kusadasi-generated-${today}`;
     
     let content = await kv.get(cacheKey);
     
@@ -95,8 +126,10 @@ export async function POST() {
       content = await kv.get(yesterdayKey);
     }
     
-    // If still no content, generate fresh content
-    if (!content) {
+    // COST PROTECTION: Only generate if not already done today
+    const generatedToday = await kv.get(generatedFlagKey);
+    
+    if (!content && !generatedToday) {
       // Define the grounding tool
       const groundingTool = {
         googleSearch: {},
@@ -109,7 +142,7 @@ export async function POST() {
 
       const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
       
-      // Make the request with grounding
+      // Make the request with grounding (EXPENSIVE - only once per day)
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
@@ -118,8 +151,12 @@ export async function POST() {
 
       content = response.text;
       
-      // Cache the fresh content
+      // Cache the fresh content and set generation flag
       await kv.set(cacheKey, content, { ex: 25 * 60 * 60 });
+      await kv.set(generatedFlagKey, true, { ex: 25 * 60 * 60 });
+    } else if (!content && generatedToday) {
+      // Return fallback message if daily limit reached
+      content = "Daily content generation limit reached for cost protection. Please check back tomorrow for fresh content.";
     }
     
     return NextResponse.json({ 
