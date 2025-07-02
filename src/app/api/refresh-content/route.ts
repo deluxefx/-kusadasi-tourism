@@ -140,13 +140,7 @@ export async function POST() {
         tools: [groundingTool],
       };
 
-      const prompt = `You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. 
-Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. 
-Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. 
-Keep it fresh and interesting for visitors. Write in a friendly, informative tone. 
-Include specific details and make it feel current and relevant for today's date. 
-Use search results to provide accurate, up-to-date information and also create daily itineraries. Do not use Turkish characters, always write Kusadasi with English characters.
-Dont tell the current time, you should tell it like this: when I am writing this bulletin and tell the current time in Kusadasi.`;
+      const prompt = "Act as the official Kusadasi tourist website. Provide a cheerful, informative, and real-time daily bulletin for visitors. Include current weather, recent events, new restaurant openings, seasonal activities, and local news from Kusadasi and wider Turkey. Highlight specific details and create daily itineraries. Crucially, list upcoming cruise ships for the next two weeks. Do not use Turkish characters for 'Kusadasi'. Announce the current Kusadasi time by stating: 'When I am writing this bulletin, the current time in Kusadasi is [HH:MM AM/PM, GMT+3].";
 
       // Make the request with grounding (EXPENSIVE - only once per day)
       const response = await ai.models.generateContent({
