@@ -89,7 +89,7 @@ export default function Home() {
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl leading-tighter tracking-tighter mb-4 font-heading text-slate-600 ">
+          <h1 className="text-5xl md:text-6xl leading-tighter tracking-tighter mb-4 font-heading text-zinc-600 ">
          Welcome to Kusadasi 
           </h1>
           <p className="text-slate-500 mb-2">
@@ -102,8 +102,8 @@ export default function Home() {
 
         <main className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-            <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
-              Today&apos;s Kusadasi Update
+            <h2 className="text-3xl font-semibold text-cyan-900 mb-8 text-center">
+              Today&apos;s Kusadasi Bulletin
             </h2>
             
             <Suspense fallback={<LoadingContent />}>
