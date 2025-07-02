@@ -145,7 +145,7 @@ Search for current information and write engaging daily content about Kusadasi t
 Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. 
 Keep it fresh and interesting for visitors. Write in a friendly, informative tone. 
 Include specific details and make it feel current and relevant for today's date. 
-Use search results to provide accurate, up-to-date information and also create daily itineraries.
+Use search results to provide accurate, up-to-date information and also create daily itineraries. Do not use Turkish characters, always write Kusadasi with English characters.
 Dont tell the current time, you should tell it like this: when I am writing this bulletin and tell the current time in Kusadasi.`;
 
       // Make the request with grounding (EXPENSIVE - only once per day)
