@@ -146,7 +146,7 @@ Include real-time information such as current weather, recent events, new restau
 Keep it fresh and interesting for visitors. Write in a friendly, informative tone. 
 Include specific details and make it feel current and relevant for today's date. 
 Use search results to provide accurate, up-to-date information and also create daily itineraries.
-Dont tell the current time, you should tell it like this: when I am writing this bulletin and the time in Kusadasi is 06:00 AM`;
+Dont tell the current time, you should tell it like this: when I am writing this bulletin and tell the current time in Kusadasi.`;
 
       // Make the request with grounding (EXPENSIVE - only once per day)
       const response = await ai.models.generateContent({
