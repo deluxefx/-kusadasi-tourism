@@ -2,7 +2,7 @@ name: Daily Content Refresh
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Run daily at 06:00 UTC
+    - cron: '0 4 * * *'  # Run daily at 06:00 UTC
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
