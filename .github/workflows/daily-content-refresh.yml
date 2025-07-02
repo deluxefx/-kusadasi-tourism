@@ -1,0 +1,23 @@
+name: Daily Content Refresh
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Run daily at 06:00 UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  refresh-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Refresh Kusadasi Content
+        run: |
+          response=$(curl -s -w "%{http_code}" -X GET https://www.kusadasi.biz/api/refresh-content)
+          http_code="${response: -3}"
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Content refresh successful"
+          else
+            echo "❌ Content refresh failed with status: $http_code"
+            exit 1
+          fi
