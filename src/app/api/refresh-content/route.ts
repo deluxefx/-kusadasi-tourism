@@ -76,7 +76,7 @@ export async function GET() {
       
       // Cache the content and set the generated flag
       await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
-      await kv.set(generatedFlagKey, true, { ex: 25 * 60 * 60 }); // 25 hours TTL
+      await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 }); // 23 hours TTL
       
       // Clean up old content to prevent database bloat
       await cleanupOldContent();
@@ -153,7 +153,7 @@ export async function POST() {
       
       // Cache the fresh content and set generation flag
       await kv.set(cacheKey, content, { ex: 25 * 60 * 60 });
-      await kv.set(generatedFlagKey, true, { ex: 25 * 60 * 60 });
+      await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 });
     } else if (!content && generatedToday) {
       // Return fallback message if daily limit reached
       content = "Daily content generation limit reached for cost protection. Please check back tomorrow for fresh content.";
