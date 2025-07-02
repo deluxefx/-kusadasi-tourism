@@ -140,8 +140,14 @@ export async function POST() {
         tools: [groundingTool],
       };
 
-      const prompt = "You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. Keep it fresh and interesting for visitors. Write in a friendly, informative tone. Include specific details and make it feel current and relevant for today's date. Use search results to provide accurate, up-to-date information.";
-      
+      const prompt = `You are the Kusadasi tourist website and your job is to bring daily news about Kusadasi, Turkey. 
+Search for current information and write engaging daily content about Kusadasi tourism, events, weather, local attractions, restaurants, or cultural highlights. 
+Include real-time information such as current weather, recent events, new restaurant openings, seasonal activities, or any current news about Kusadasi. 
+Keep it fresh and interesting for visitors. Write in a friendly, informative tone. 
+Include specific details and make it feel current and relevant for today's date. 
+Use search results to provide accurate, up-to-date information and also create daily itineraries.
+Dont tell the current time, you should tell it like this: when I am writing this bulletin and the time in Kusadasi is 06:00 AM`;
+
       // Make the request with grounding (EXPENSIVE - only once per day)
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
