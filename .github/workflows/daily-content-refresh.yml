@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Refresh Kusadasi Content
         run: |
-          response=$(curl -s -w "%{http_code}" -X GET https://www.kusadasi.biz/api/refresh-content)
+          response=$(curl -s -w "%{http_code}" -X GET https://today.kusadasi.biz/api/refresh-content)
           http_code="${response: -3}"
           
           if [ "$http_code" -eq 200 ]; then
