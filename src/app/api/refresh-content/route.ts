@@ -105,9 +105,17 @@ Announce the current Kusadasi time by stating: 'When I am writing this bulletin,
       });
 
       const content = response.text;
+      const generatedAt = new Date().toISOString();
+      
+      // Store content with timestamp
+      const contentWithMeta = {
+        content,
+        generatedAt,
+        date: today
+      };
       
       // Cache the content and set the generated flag
-      await kv.set(cacheKey, content, { ex: 25 * 60 * 60 }); // 25 hours TTL
+      await kv.set(cacheKey, contentWithMeta, { ex: 25 * 60 * 60 }); // 25 hours TTL
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 }); // 23 hours TTL
       
       // Clean up old content to prevent database bloat
@@ -118,7 +126,8 @@ Announce the current Kusadasi time by stating: 'When I am writing this bulletin,
         content,
         cached: true,
         message: "New content generated with Google AI",
-        date: today 
+        date: today,
+        generatedAt
       });
     } else {
       // Return existing content without generating new
@@ -182,9 +191,17 @@ export async function POST() {
       });
 
       content = response.text;
+      const generatedAt = new Date().toISOString();
+      
+      // Store content with timestamp
+      const contentWithMeta = {
+        content,
+        generatedAt,
+        date: today
+      };
       
       // Cache the fresh content and set generation flag
-      await kv.set(cacheKey, content, { ex: 25 * 60 * 60 });
+      await kv.set(cacheKey, contentWithMeta, { ex: 25 * 60 * 60 });
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 });
     } else if (!content && generatedToday) {
       // Return fallback message if daily limit reached

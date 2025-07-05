@@ -2,41 +2,100 @@ import { Suspense } from 'react';
 import { kv } from '@vercel/kv';
 import ReactMarkdown from 'react-markdown';
 import Navigation from '@/components/Navigation';
+import type { Metadata } from 'next';
 
 
 // Force dynamic rendering to always show latest content
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-async function getDailyContent() {
+async function getContentTimestamp() {
   try {
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `kusadasi-content-${today}`;
     
-    let content = await kv.get(cacheKey);
+    let contentData = await kv.get(cacheKey);
     
     // If no content for today, try yesterday as fallback
-    if (!content) {
+    if (!contentData) {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
-      content = await kv.get(yesterdayKey);
+      contentData = await kv.get(yesterdayKey);
     }
     
     // Try a few different recent dates as fallback
-    if (!content) {
+    if (!contentData) {
       for (let i = 0; i < 7; i++) {
         const testDate = new Date();
         testDate.setDate(testDate.getDate() - i);
         const testKey = `kusadasi-content-${testDate.toISOString().split('T')[0]}`;
-        content = await kv.get(testKey);
-        if (content) {
+        contentData = await kv.get(testKey);
+        if (contentData) {
           break;
         }
       }
     }
     
-    return (content as string) || 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
+    // Return timestamp if available
+    if (contentData && typeof contentData === 'object' && 'generatedAt' in contentData) {
+      return (contentData as { generatedAt: string }).generatedAt;
+    }
+    
+    return new Date().toISOString();
+  } catch (error) {
+    console.error('Error fetching content timestamp:', error);
+    return new Date().toISOString();
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const lastModified = await getContentTimestamp();
+  
+  return {
+    other: {
+      'last-modified': lastModified,
+      'article:modified_time': lastModified,
+    },
+  };
+}
+
+async function getDailyContent() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const cacheKey = `kusadasi-content-${today}`;
+    
+    let contentData = await kv.get(cacheKey);
+    
+    // If no content for today, try yesterday as fallback
+    if (!contentData) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayKey = `kusadasi-content-${yesterday.toISOString().split('T')[0]}`;
+      contentData = await kv.get(yesterdayKey);
+    }
+    
+    // Try a few different recent dates as fallback
+    if (!contentData) {
+      for (let i = 0; i < 7; i++) {
+        const testDate = new Date();
+        testDate.setDate(testDate.getDate() - i);
+        const testKey = `kusadasi-content-${testDate.toISOString().split('T')[0]}`;
+        contentData = await kv.get(testKey);
+        if (contentData) {
+          break;
+        }
+      }
+    }
+    
+    // Handle both old string format and new object format
+    if (typeof contentData === 'string') {
+      return contentData;
+    } else if (contentData && typeof contentData === 'object' && 'content' in contentData) {
+      return (contentData as { content: string }).content;
+    }
+    
+    return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
   } catch (error) {
     console.error('Error fetching daily content:', error);
     return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon.';
