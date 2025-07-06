@@ -95,10 +95,10 @@ async function getDailyContent() {
       return (contentData as { content: string }).content;
     }
     
-    return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
+    return 'Welcome to Kusadasi! Your weekly dose of tourism updates will appear here soon. Content refreshes daily at 6 AM Turkish Time.';
   } catch (error) {
     console.error('Error fetching daily content:', error);
-    return 'Welcome to Kusadasi! Your daily dose of tourism updates will appear here soon.';
+    return 'Welcome to Kusadasi! Your weekly dose of tourism updates will appear here soon.';
   }
 }
 
@@ -152,7 +152,7 @@ export default function Home() {
          Welcome to Kusadasi 
           </h1>
           <p className="text-slate-500 mb-2">
-            Your Daily Gateway to Turkey&apos;s Aegean Paradise
+            Your Weekly Gateway to Turkey&apos;s Aegean Paradise
           </p>
           <p className="text-lg text-gray-600">
             {currentDate}
@@ -162,7 +162,7 @@ export default function Home() {
         <main className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
             <h2 className="text-3xl font-semibold text-cyan-900 mb-8 text-center">
-              Today&apos;s Kusadasi Bulletin
+              Weekly Kusadasi Bulletin
             </h2>
             
             <Suspense fallback={<LoadingContent />}>
