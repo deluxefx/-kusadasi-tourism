@@ -39,7 +39,7 @@ export async function GET() {
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
     const currentDate = new Date();
-    const isMonday = currentDate.getDay() === 1; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const isMonday = true; // Temporarily allow generation any day
     
     // COST PROTECTION: Check if content was already generated today
     const existingContent = await kv.get(cacheKey);
@@ -166,7 +166,7 @@ export async function POST() {
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
     const currentDate = new Date();
-    const isMonday = currentDate.getDay() === 1; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const isMonday = true; // Temporarily allow generation any day
     
     let content = await kv.get(cacheKey);
     
