@@ -38,7 +38,6 @@ export async function GET() {
     const generatedFlagKey = `kusadasi-generated-${today}`;
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
-    const currentDate = new Date();
     const isMonday = true; // Temporarily allow generation any day
     
     // COST PROTECTION: Check if content was already generated today
@@ -165,7 +164,6 @@ export async function POST() {
     const generatedFlagKey = `kusadasi-generated-${today}`;
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
-    const currentDate = new Date();
     const isMonday = true; // Temporarily allow generation any day
     
     let content = await kv.get(cacheKey);
