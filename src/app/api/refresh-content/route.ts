@@ -111,7 +111,7 @@ Today is [Insert today’s date: e.g. Monday, July 8, 2025]. Generate the bullet
       };
       
       // Cache the content and set the generated flag
-      await kv.set(cacheKey, contentWithMeta, { ex: 25 * 60 * 60 }); // 25 hours TTL
+      await kv.set(cacheKey, contentWithMeta, { ex: 30 * 24 * 60 * 60 }); // 30 days TTL
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 }); // 23 hours TTL
       
       // Clean up old content to prevent database bloat
@@ -212,7 +212,7 @@ export async function POST() {
       };
       
       // Cache the fresh content and set generation flag
-      await kv.set(cacheKey, contentWithMeta, { ex: 25 * 60 * 60 });
+      await kv.set(cacheKey, contentWithMeta, { ex: 30 * 24 * 60 * 60 });
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 });
     } else if (!content && generatedToday) {
       // Return fallback message if daily limit reached
