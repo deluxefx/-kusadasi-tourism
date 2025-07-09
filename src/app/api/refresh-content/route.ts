@@ -8,12 +8,12 @@ const ai = new GoogleGenAI({
 
 async function cleanupOldContent() {
   try {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    // Delete content older than 7 days
+    // Delete content older than 30 days
     const keysToDelete = [];
-    for (let i = 8; i <= 30; i++) { // Check up to 30 days back
+    for (let i = 31; i <= 60; i++) { // Check 31-60 days back for cleanup
       const oldDate = new Date();
       oldDate.setDate(oldDate.getDate() - i);
       const oldKey = `kusadasi-content-${oldDate.toISOString().split('T')[0]}`;
@@ -38,7 +38,8 @@ export async function GET() {
     const generatedFlagKey = `kusadasi-generated-${today}`;
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
-    const isMonday = true; // Temporarily allow generation any day
+    const currentDate = new Date();
+    const isMonday = currentDate.getDay() === 1; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     
     // COST PROTECTION: Check if content was already generated today
     const existingContent = await kv.get(cacheKey);
@@ -110,7 +111,7 @@ Today is [Insert today’s date: e.g. Monday, July 8, 2025]. Generate the bullet
       };
       
       // Cache the content and set the generated flag
-      await kv.set(cacheKey, contentWithMeta, { ex: 30 * 24 * 60 * 60 }); // 30 days TTL
+      await kv.set(cacheKey, contentWithMeta, { ex: 7 * 24 * 60 * 60 }); // 7 days TTL
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 }); // 23 hours TTL
       
       // Clean up old content to prevent database bloat
@@ -164,7 +165,8 @@ export async function POST() {
     const generatedFlagKey = `kusadasi-generated-${today}`;
     
     // MONDAY CHECK: Only allow API calls to Google AI on Mondays
-    const isMonday = true; // Temporarily allow generation any day
+    const currentDate = new Date();
+    const isMonday = currentDate.getDay() === 1; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     
     let content = await kv.get(cacheKey);
     
@@ -210,7 +212,7 @@ export async function POST() {
       };
       
       // Cache the fresh content and set generation flag
-      await kv.set(cacheKey, contentWithMeta, { ex: 30 * 24 * 60 * 60 });
+      await kv.set(cacheKey, contentWithMeta, { ex: 7 * 24 * 60 * 60 });
       await kv.set(generatedFlagKey, true, { ex: 23 * 60 * 60 });
     } else if (!content && generatedToday) {
       // Return fallback message if daily limit reached
