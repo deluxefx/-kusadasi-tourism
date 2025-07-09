@@ -33,7 +33,7 @@ async function cleanupOldContent() {
 
 export async function GET() {
   try {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format.
     const cacheKey = `kusadasi-content-${today}`;
     const generatedFlagKey = `kusadasi-generated-${today}`;
     
